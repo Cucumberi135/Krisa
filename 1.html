@@ -3,27 +3,113 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Z</title>
+  <title>Сайт со счетчиком кликов</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1>Добро пожаловать на мой сайт</h1>
-    <nav>
-      <ul>
-        <li><a href="#about">Обо мне</a></li>
-        <li><a href="#projects">Проекты</a></li>
-        <li><a href="#contacts">Контакты</a></li>
-      </ul>
-    </nav>
-  </header>
   <main>
     <section id="about">
       <img src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSrvI0Wm4sEsX_leEkFxy1ELx0QJlo14E8NAqHwOlVeD-JSrS6nzBjCNsQehfWivba_6U5gYIc-Ew3qso4KZrDYZds8O9fkSoM1svX0bMk" alt="Пример картинки" />
     </section>
     <section id="contacts">
-      <button>Спасибо тебе!</button>
+      <button id="thankButton">Спасибо тебе!</button>
+      <div class="counter">Количество благодарностей: <span id="clickCount">0</span></div>
     </section>
   </main>
+  <footer>
+    <p>© 2023 Все права защищены</p>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const button = document.getElementById('thankButton');
+      const counterElement = document.getElementById('clickCount');
+      
+      // Загружаем счетчик из localStorage или устанавливаем 0
+      let clickCount = localStorage.getItem('thankButtonClicks') || 0;
+      counterElement.textContent = clickCount;
+      
+      button.addEventListener('click', function() {
+        // Увеличиваем счетчик
+        clickCount++;
+        counterElement.textContent = clickCount;
+        
+        // Сохраняем в localStorage
+        localStorage.setItem('thankButtonClicks', clickCount);
+        
+        // Создаем эффект конфетти
+        createConfetti();
+        
+        // Воспроизводим звук (если доступен)
+        playClickSound();
+      });
+      
+      function createConfetti() {
+        for (let i = 0; i < 20; i++) {
+          const confetti = document.createElement('div');
+          confetti.classList.add('confetti');
+          
+          // Случайный цвет
+          const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          
+          // Случайная позиция
+          const buttonRect = button.getBoundingClientRect();
+          const x = buttonRect.left + (buttonRect.width / 2);
+          const y = buttonRect.top;
+          
+          confetti.style.left = x + 'px';
+          confetti.style.top = y + 'px';
+          
+          // Случайное движение
+          const angle = Math.random() * Math.PI * 2;
+          const distance = 50 + Math.random() * 100;
+          
+          confetti.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) rotate(${Math.random() * 360}deg)`;
+          confetti.style.opacity = '0';
+          
+          // Анимация
+          confetti.style.transition = 'transform 0.5s, opacity 0.5s';
+          
+          document.body.appendChild(confetti);
+          
+          // Запускаем анимацию
+          setTimeout(() => {
+            confetti.style.transform = `translate(${Math.cos(angle) * distance * 2}px, ${Math.sin(angle) * distance * 2}px) rotate(${Math.random() * 720}deg)`;
+            confetti.style.opacity = '0';
+          }, 10);
+          
+          // Удаляем элемент после анимации
+          setTimeout(() => {
+            document.body.removeChild(confetti);
+          }, 600);
+        }
+      }
+      
+      function playClickSound() {
+        // Простой звуковой эффект с использованием Web Audio API
+        try {
+          const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          const oscillator = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+          
+          oscillator.frequency.value = 523.25; // Нота C5
+          gainNode.gain.value = 0.1;
+          
+          oscillator.start();
+          gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.2);
+          
+          setTimeout(() => {
+            oscillator.stop();
+          }, 200);
+        } catch (e) {
+          console.log("Web Audio API не поддерживается в этом браузере");
+        }
+      }
+    });
+  </script>
 </body>
 </html>
