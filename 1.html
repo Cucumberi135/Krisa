@@ -12,7 +12,7 @@
       <img src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSrvI0Wm4sEsX_leEkFxy1ELx0QJlo14E8NAqHwOlVeD-JSrS6nzBjCNsQehfWivba_6U5gYIc-Ew3qso4KZrDYZds8O9fkSoM1svX0bMk" alt="Пример картинки" />
     </section>
     <section id="contacts">
-      <button id="thankButton">Спасибо тебе!</button>
+     <button id="thankButton" type="button">Спасибо тебе!</button>
       <div class="counter">Количество благодарностей: <span id="clickCount">0</span></div>
     </section>
   </main>
@@ -28,7 +28,13 @@
       // Загружаем счетчик из localStorage или устанавливаем 0
       let clickCount = localStorage.getItem('thankButtonClicks') || 0;
       counterElement.textContent = clickCount;
-      
+      button.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault(); // отменяем стандартное действие
+    e.stopPropagation(); // блокируем всплытие
+  }
+});
+
       button.addEventListener('click', function() {
         // Увеличиваем счетчик
         clickCount++;
